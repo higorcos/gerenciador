@@ -1,0 +1,51 @@
+.navbar {
+    margin: 0 !important;
+}
+.frontCoverContainer {
+   
+        background-image: url("../../public/imagens/background-workcenter.jpg");
+    
+    position: relative;
+    height: 15rem;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: cover;
+}
+
+img.img-top-front-Cover {
+    width: 8em;
+    background-color: #fff;
+    border-radius: 50%;
+}
+.Top-imag-cover {
+    position: relative;
+    top: -2em;
+}
+.painel-principal {
+    display: flex;
+    margin: 0 auto;
+    width: 1202px;
+}
+section.Infor-top {
+    margin-left: 3rem;
+    margin-top: 0.5rem;
+}
+.title-card-margin {
+    width: 844px;
+    margin: 0 auto;
+}
+.box-horizontal {
+    display: flex;
+    width: 844px;
+    margin: 0 auto;
+}
+.Danger-card {
+    padding: 1rem; 
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 15px; 
+    height: auto;
+    margin-right: 2px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    font-weight: 550;
+}
