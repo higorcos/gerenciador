@@ -1,0 +1,34 @@
+.containerLoader{
+    /* background-color: rgba(0, 0, 0, 0.329); */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loader{
+    margin-top: 10%;
+    margin-bottom: 15%;
+    width: 50px;
+}
+.containerLoaderFull{
+    background-color: rgba(0, 0, 0, 0.329);
+    top: 0;
+    position: absolute;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    bottom: 0;  
+}
+.loaderFull{
+    width: 70px;
+    height:  70px;
+    position: absolute; 
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%); /*(x,y)*/
+    
+}

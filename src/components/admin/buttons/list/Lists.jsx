@@ -2,7 +2,7 @@ import "./Lists.css";
 import { Button, Table } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import api from "../../../../services/api";
-//import Loading from "../LoadingFull";
+import Loading from "../../../utils/loading/LoadingFull";
 
  
 function List() {
@@ -13,12 +13,15 @@ function List() {
 
 
   useEffect(() => {
-    api.get("/button/show/all").then((res) => {
-      setButtonNULL(res.data.resultNULL);
-      setButton(res.data.result);
-      setRemoveLoading(true)
-      
-    });
+    setRemoveLoading(false)
+    const func = async () =>{
+      await api.get("/button/show/all").then((res) => {
+        setButtonNULL(res.data.resultNULL);
+        setButton(res.data.result); 
+      });
+    }
+    func()
+    setRemoveLoading(true)
   }, []);
   const clickLoading = ()=>{
     setRemoveLoading(false)
@@ -58,7 +61,7 @@ function List() {
   
   return (
     <>
-     {/* {!removeLoading && <Loading/> } */}
+     {!removeLoading && <Loading/> }
     <div className="container list-ste">
       <div className="Title-list-news-admin">
         <h3>Botões dos Portais</h3>
@@ -188,7 +191,7 @@ function List() {
         </tbody>
       </Table>
       </div>
-
+      
     
       </>
   );

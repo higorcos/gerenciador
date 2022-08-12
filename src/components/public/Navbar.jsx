@@ -11,7 +11,7 @@ export default function NavbarComponent(){
     <>  
         <Navbar bg="light" expand='lg' className="mb-3">
           <Container fluid>
-            <Navbar.Brand href="#">
+            <Navbar.Brand href="/">
             <img
               alt=""
               src="/imagens/wc_logo_menu-fixo.png"

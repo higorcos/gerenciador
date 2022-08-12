@@ -1,11 +1,7 @@
 import "./New.css";
-
-// import '../../../../styles/new.css'
-//import Loading from "../LoadingFull";
+import Loading from "../../../utils/loading/LoadingFull";
 
 import React, { useState, useRef, useEffect } from "react";
-
-
 import { useNavigate } from "react-router-dom";
 import api from "../../../../services/api";
 
@@ -21,13 +17,18 @@ export default function NewButton() {
   const [visible, setVisible] = useState(true);
   const [box, setbox] = useState(true);
  
-  //const [removeLoading, setRemoveLoading] = useState(true); //loading
+  const [removeLoading, setRemoveLoading] = useState(true); //loading
 
-  //render categorias
+  //render Tipos de botões
   useEffect(() => {
+   setRemoveLoading(false);
     api.get("/button/show/type").then((res) => {
       setCategory(res.data.res);
-      console.log(category)
+      setRemoveLoading(true);
+
+    }).catch((err)=>{
+      setRemoveLoading(true);
+
     });
   }, []);
 
@@ -69,7 +70,7 @@ export default function NewButton() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-  //  setRemoveLoading(false);
+   setRemoveLoading(false);
 
      const dataJson = new FormData();
      dataJson.append("name", title);
@@ -113,7 +114,7 @@ export default function NewButton() {
 
   return (
     <>
-      {/* {!removeLoading && <Loading />} */}
+      {!removeLoading && <Loading />}
 
       <div className="content-admin-news">
         <form onSubmit={handleSubmit} className="form-admin-news">
