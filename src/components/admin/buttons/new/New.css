@@ -38,6 +38,13 @@ form h3{
 input[type='file'] {
     display:none;
 } 
+.checked-form-button {
+  display: flex;
+}
+.checked-form-button input {
+  width: 6rem !important;
+
+}
 .tox .tox-editor-header {
   z-index: 0 !important;
 }

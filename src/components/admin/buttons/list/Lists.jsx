@@ -1,19 +1,21 @@
+import "./Lists.css";
 import { Button, Table } from "react-bootstrap";
-import "../../styles/lists.css";
 import { useState, useEffect } from "react";
-import api from "../../services/api";
-import Loading from "../LoadingFull";
+import api from "../../../../services/api";
+//import Loading from "../LoadingFull";
 
  
 function List() {
-  const [news, setNews] = useState([]);
-
+  const [buttonNULL, setButtonNULL] = useState([]);
+  const [button, setButton] = useState([]);
+  const [resultDelete, setResultDelete] = useState('')
   const [removeLoading, setRemoveLoading] = useState(false) //loading
 
 
   useEffect(() => {
-    api.get("/news").then((res) => {
-      setNews(res.data.res);
+    api.get("/button/show/all").then((res) => {
+      setButtonNULL(res.data.resultNULL);
+      setButton(res.data.result);
       setRemoveLoading(true)
       
     });
@@ -22,20 +24,27 @@ function List() {
     setRemoveLoading(false)
   }
 
-  const deleteNews = (idNews,nameImg) => {
-    const alertConf = window.confirm("Quer deletar a noticia ?");
+  useEffect(() => {
+    setButton(button.filter((b) => b.ID !== resultDelete));  
+  setButtonNULL(buttonNULL.filter((b) => b.ID !== resultDelete));  
+  setRemoveLoading(true)
+  // eslint-disable-next-line
+}, [resultDelete]);
+
+  const deleteButton = (idButton) => {
+    const alertConf = window.confirm("Quer deletar o botão ?");
     if (alertConf) {
       setRemoveLoading(false)
       api
-        .post(`/news/delete/${idNews}/${nameImg}`)
+        .delete(`/button/delete/${idButton}`)
         .then((res) => {
           const result = res.data;
           if (result.err) {
-            alert("Erro ao tentar apagar a noticia");
+            alert("Erro ao tentar deletar");
           } else {
             setRemoveLoading(true)
-            const resultDelete = news.filter((news) => news.ID !== idNews);
-            setNews(resultDelete);  
+            setResultDelete(idButton);  
+            
           }
         })
         .catch((err) => {
@@ -44,73 +53,55 @@ function List() {
     }
   };
 
-  const dateRender = (dateReq) => {
-    const date = new Date(dateReq);
-    const formatDate =
-      date.getDate() + "/" + monthDigit(date) + "/" + date.getFullYear();
-
-    return formatDate;
-  };
-  const monthDigit = (dateReq) => {
-    const dateString = dateReq.getMonth() + 1;
-    if (dateString >= 10) {
-      return dateString;
-    } else {
-      return "0" + dateString;
-    }
-  };
+ 
 
   
   return (
     <>
-     {!removeLoading && <Loading/> }
+     {/* {!removeLoading && <Loading/> } */}
     <div className="container list-ste">
       <div className="Title-list-news-admin">
-        <h3>Painel de Notícias</h3>
+        <h3>Botões dos Portais</h3>
       </div>
      
     <div className="btn-list-add">
     <Button
         className="btn-success"
         variant="primary"
-        href={"/admin/noticias"}
+        href={"/botoes/criar"}
         onClick={() => clickLoading()}
 
       >
-        Criar nova notícia
+        Criar novo Botão
       </Button>
-    </div>
+      <div className="Title-list-news-admin">
+        <br/>
+        <h6>Botões de Genéricos (Padrão de todos os portais)</h6>
+      </div>
+     </div>
       <Table responsive>
         <thead>
           <tr>
-            <th>Titulo</th>
-            <th>Data</th>
-            <th>Visualizações</th>
+            <th>Nome</th>
+            <th>Visibilidade</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {news.map((news, index) => (
+          {buttonNULL.map((button, index) => (
             <tr key={index}>
-              <td className="title-td">{news.TITULO}</td>
-
-              <td>{dateRender(news.DATA_POST)}</td>
-              <td className="views-td">{news.VISUALIZACAO}</td>
+              <td title={button.NOME}
+              className="title-td">{button.NOME.substr(0, 30)}{button.NOME.substr(30).length !== 0 && "..."}</td>
+              <td>{button.DISPONIVEL ===1 ? "Visível" : "Invisível"}</td>
               <td>
-                <Button
-                  className="btn-Danger"
-                  variant="primary"
-                  href={"/noticia/" + news.ID}
-                  onClick={() => clickLoading()}
-
-                >
-                  Ver
-                </Button>
+               
                 <Button
                   className="btn-Danger"
                   variant="warning"
-                  href={"/admin/noticias/editar/" + news.ID}
-                  onClick={() => clickLoading()}
+                  // href={"/admin/noticias/editar/" + button.ID}
+                  onClick={() => alert("Em manutenção")}
+
+                  // onClick={() => clickLoading()}
 
                 >
                   Editar
@@ -118,7 +109,7 @@ function List() {
                 <Button
                   className="btn-Danger"
                   variant="danger"
-                  onClick={() => deleteNews(news.ID,news.IMG)}
+                  onClick={() => deleteButton(button.ID)}
                 >
                   Apagar
                 </Button>
@@ -127,8 +118,78 @@ function List() {
           ))}
         </tbody>
       </Table>
-      {news.length === 0 && <p className="resultTxt">Nenhum resultado</p>}
-    </div>
+      {buttonNULL.length === 0 && <p className="resultTxt">Nenhum resultado</p>}
+    
+
+
+    <div className="btn-list-add">
+    <label className="form-news">
+            Selecione botões de um Portal:
+            <select
+              className="select select-category form-input-news"
+              defaultValue={1} //1== id da categoria geral
+              // onChange={(e) => setCategorySelect(e.target.value)}
+            >
+            {/* {category == null
+                ? ""
+                : category.map((item, i) => (
+                    <option value={item.ID} key={i}>
+                      {item.TIPO_NOME}
+                    </option>
+                  ))}  */}
+                  <option value="1" >
+                      Portal de Raposa
+                    </option>
+            </select>
+          </label>
+      <div className="Title-list-news-admin">
+        <br/>
+        <h6>Botões Unitários (Especifico de um portal)</h6>
+      </div>
+     </div>
+      <Table responsive>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Visibilidade</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {button.map((button, index) => (
+             <tr key={index}>
+              <td title={button.NOME}
+              className="title-td">{button.NOME.substr(0, 30)}{button.NOME.substr(30).length !== 0 && "..."}</td>
+             
+             <td>{button.DISPONIVEL ===1 ? "Visível" : "Invisível"}</td>
+             <td>
+              
+               <Button
+                 className="btn-Danger"
+                 variant="warning"
+                //  href={"/admin/noticias/editar/" + button.ID}
+                 onClick={() => alert("Em manutenção")}
+
+                //  onClick={() => clickLoading()}
+
+               >
+                 Editar
+               </Button>
+               <Button
+                 className="btn-Danger"
+                 variant="danger"
+                 onClick={() => deleteButton(button.ID)}
+               >
+                 Apagar
+               </Button>
+             </td>
+           </tr>
+         ))}
+        </tbody>
+      </Table>
+      </div>
+
+    
       </>
   );
 }

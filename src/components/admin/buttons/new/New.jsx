@@ -3,102 +3,112 @@ import "./New.css";
 // import '../../../../styles/new.css'
 //import Loading from "../LoadingFull";
 
-//import React, { useState, useRef, useEffect } from "react";
-//import { useNavigate } from "react-router-dom";
-//import api from "../../services/api";
+import React, { useState, useRef, useEffect } from "react";
 
-export default function newButton() {
+
+import { useNavigate } from "react-router-dom";
+import api from "../../../../services/api";
+
+export default function NewButton() {
   
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // const [category, setCategory] = useState(null);
-  // const [categorySelect, setCategorySelect] = useState("");
-  // const [title, setTitle] = useState("");
-  // const [date, setDate] = useState("");
-
-  // const [img, setImg] = useState("");
+  const [category, setCategory] = useState(null);
+  const [categorySelect, setCategorySelect] = useState(1);
+  const [title, setTitle] = useState("");
+  const [img, setImg] = useState("");
+  const [link, setLink] = useState("");
+  const [visible, setVisible] = useState(true);
+  const [box, setbox] = useState(true);
  
-
   //const [removeLoading, setRemoveLoading] = useState(true); //loading
 
   //render categorias
-  // useEffect(() => {
-  //   api.get("/category").then((res) => {
-  //     setCategory(res.data.res);
-  //     //console.log(category)
-  //   });
-  // }, []);
+  useEffect(() => {
+    api.get("/button/show/type").then((res) => {
+      setCategory(res.data.res);
+      console.log(category)
+    });
+  }, []);
 
-  // useEffect(() => {
-  //   console.log(img);
+  useEffect(() => {
+    if(categorySelect == 1){
+      setbox(true)
+    }else{
+      setbox(false)
 
-  //   const img2 = img || " "; // se imag for undefined, a img2 será uma string vazia
+    }
+  }, [categorySelect]);
 
-  //   if (img2 !== " ") {
-  //     const resultType = img2.type.split("/");
-  //     if (resultType[0] === "image") {
-  //       //aceita apenas no formato de imagem
-  //       //se for imagem tá tudo ok
-  //     } else {
-  //       alert("Selecione um arquivo do tipo imagem");
-  //       setImg("");
-  //     }
-  //   } else if (img2 !== undefined) {
-  //     //setImg({'name': 'LOGO.png', 'lastModified': 1652564602649, 'lastModifiedDate': 'Sat May 14 2022 18:43:22 GMT-0300 (Horário Padrão de Brasília)','webkitRelativePath': '', 'size': 47355,})
-  //   }
-  // }, [img]);
+  useEffect(() => {
+   // console.log(img);
+
+    const img2 = img || " "; // se imag for undefined, a img2 será uma string vazia
+
+    if (img2 !== " ") {
+      const resultType = img2.type.split("/");
+      if (resultType[1] === "svg+xml") {
+        //aceita apenas no formato de imagem
+        //se for imagem tá tudo ok
+      } else {
+        alert("Selecione uma imagem do tip .svg");
+        setImg("");
+      }
+    } else if (img2 !== undefined) {
+      //setImg({'name': 'LOGO.png', 'lastModified': 1652564602649, 'lastModifiedDate': 'Sat May 14 2022 18:43:22 GMT-0300 (Horário Padrão de Brasília)','webkitRelativePath': '', 'size': 47355,})
+    }
+  }, [img]);
 
 
 
 
-
+  const handleOnChange = () => {
+    setVisible(!visible);
+  }
   //submit formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
   
   //  setRemoveLoading(false);
 
-    // const dataJson = new FormData();
-    // if(title !== ""){
-    //   dataJson.append("title", title);
-    // }else{
-    //   dataJson.append("title", "Nova Notícia");
-    // }
+     const dataJson = new FormData();
+     dataJson.append("name", title);
+
+
+     if(visible === true){
+      dataJson.append("available", 1);
+
+    }else{
+      dataJson.append("available", 0);
+    }
     
-    // dataJson.append("img", img);
-    
-
-    // if (categorySelect === "") {
-    //   //setar valor padrão para categoria geral
-    //   setCategorySelect(1);
-    //   dataJson.append("category", categorySelect);
-    // } else {
-    //   dataJson.append("category", categorySelect);
-    // }
+    dataJson.append("icone", img);
+    dataJson.append("link", link);
+    dataJson.append("type", categorySelect);
 
 
-    // const headers = {
-    //   headers: {
-    //     "Content-Type": "multipart/form-data",
-    //   },
-    // };
+     const headers = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }, 
+    }; 
  
-    // await api
-    //   .post("/news/new/", dataJson, headers)
-    //   .then((res) => {
-    //     if (res.data.err) {
-    //       alert("Ocorreu um erro, tente novamente!!!");
-    //       setRemoveLoading(true);
-    //     } else {
-    //       alert("A notícia foi publicada com Sucesso");
-    //       setRemoveLoading(true);
-    //       navigate("/admin/noticias/painel");
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     setRemoveLoading(true);
-    //     alert("Ocorreu um erro, tente novamente!!!");
-    //   });
+     await api
+      .post("/button/new/", dataJson, headers)
+      .then((res) => {
+        if (res.data.err) {
+          alert("Ocorreu um erro, tente novamente!!!");
+          //setRemoveLoading(true);
+        } else {
+          alert("O botão foi criado com Sucesso");
+          //setRemoveLoading(true);
+          navigate("/botoes/mostrar");
+        }
+      })
+      .catch((err) => {
+        //setRemoveLoading(true);
+        alert("Ocorreu um erro, tente novamente!!!");
+      });
   };
 
   return (
@@ -115,8 +125,8 @@ export default function newButton() {
               type="text"
               name="title"
               className="form-input-news"
-              // value={title}
-              // onChange={(e) => setTitle(e.target.value)}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </label>
 
@@ -127,10 +137,10 @@ export default function newButton() {
               name="imgTop"
               accept="image/*"
               className="form-input-news"
-              // onChange={(e) => setImg(e.target.files[0])}
+              onChange={(e) => setImg(e.target.files[0])}
             />
             <div className="form-file-new-box">
-              {/* <p>
+             <p>
                 {img !== "" && img !== undefined ? (
                   <>
                     <a
@@ -150,7 +160,7 @@ export default function newButton() {
                 ) : (
                   "Selecionar imagem"
                 )}
-              </p> */}
+              </p> 
               <p>Buscar</p>
             </div>
           </label>
@@ -160,17 +170,38 @@ export default function newButton() {
             <select
               className="select select-category form-input-news"
               defaultValue={1} //1== id da categoria geral
-              // onChange={(e) => setCategorySelect(e.target.value)}
+              onChange={(e) => setCategorySelect(e.target.value)}
             >
-              {/* {category == null
+            {category == null
                 ? ""
                 : category.map((item, i) => (
                     <option value={item.ID} key={i}>
-                      {item.NOME}
+                      {item.TIPO_NOME}
                     </option>
-                  ))} */}
+                  ))} 
             </select>
           </label>
+          {box ? (
+            <label className="form-news">
+            Em qual portal o botão deve ser adicionado:
+            <select
+              className="select select-category form-input-news"
+              defaultValue={1} //1== id da categoria geral
+              // onChange={(e) => setCategorySelect(e.target.value)}
+            >
+            {/* {category == null
+                ? ""
+                : category.map((item, i) => (
+                    <option value={item.ID} key={i}>
+                      {item.TIPO_NOME}
+                    </option>
+                  ))}  */}
+                  <option value="1" >
+                      Portal de Raposa
+                    </option>
+            </select>
+          </label>
+          ):<></>}
 
           <label className="form-news">
             Link
@@ -178,10 +209,24 @@ export default function newButton() {
               type="text"
               name="link-botão"
               className="form-input-news"
-              // value={date}
-              // onChange={(e) => setDate(e.target.value)}
+              value={link}
+               onChange={(e) => setLink(e.target.value)}
             />
           </label>
+          <label className="form-news">Selecione a visibilidade do botão:</label>
+          <label className="form-ews" htmlFor="html">
+          
+          <div className="checked-form-button">
+
+          <input type="checkbox" id="html" name="select-visible"
+          value="Paneer"
+          checked={visible}
+          onChange={handleOnChange}/>
+          {visible ? 'Botão estará visível': "Botão não estará visível"}
+          </div>
+          </label><br/>
+        
+    
 
 
          
