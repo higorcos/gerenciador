@@ -1,10 +1,10 @@
-const idPortalApi = '1fea43fec0ccd7f2b0cbf55804aca8182177ab79'
+
 
 module.exports = {
-    idPortalApi: `${idPortalApi}`,
-    urlApi: `http://ec2-54-207-215-247.sa-east-1.compute.amazonaws.com:8004/${idPortalApi}`,
+
+    urlApi: `http://ec2-54-207-215-247.sa-east-1.compute.amazonaws.com:8004`,
     //ou
-   //urlApi: `http://localhost:8004/${idPortalApi}`,
+    //urlApi: `http://localhost:8004`,
  
     //config bubões e imagens
     link: "http://www.transparenciadministrativa.com.br", //Onde o token abaixo ser[a utilizado]

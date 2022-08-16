@@ -19,12 +19,24 @@ export default function NewButton() {
  
   const [removeLoading, setRemoveLoading] = useState(true); //loading
 
-  //render Tipos de botões
+
+  const [optionPortal,setOptionPortal] = useState(null)
+  const [idPortal,setIdPortal] = useState(null)
+
+
+  //render Tipos de botões E PORTAIS
   useEffect(() => {
    setRemoveLoading(false);
-    api.get("/button/show/type").then((res) => {
+    api.get("/fakeID/button/show/type").then((res) => {
       setCategory(res.data.res);
+      api.get(`/fakeID/portal/show/available`).then((res) => {  
+        setOptionPortal(res.data.res);
+        
+        setRemoveLoading(true);
+      }).catch((err)=>{
       setRemoveLoading(true);
+        
+      });
 
     }).catch((err)=>{
       setRemoveLoading(true);
@@ -86,7 +98,7 @@ export default function NewButton() {
     dataJson.append("icone", img);
     dataJson.append("link", link);
     dataJson.append("type", categorySelect);
-
+    console.log(link, categorySelect, title)
 
      const headers = {
       headers: {
@@ -95,14 +107,14 @@ export default function NewButton() {
     }; 
  
      await api
-      .post("/button/new/", dataJson, headers)
+      .post(`/${idPortal}/button/new`, dataJson, headers)
       .then((res) => {
         if (res.data.err) {
           alert("Ocorreu um erro, tente novamente!!!");
-          //setRemoveLoading(true);
+          setRemoveLoading(true);
         } else {
           alert("O botão foi criado com Sucesso");
-          //setRemoveLoading(true);
+          setRemoveLoading(true);
           navigate("/botoes/mostrar");
         }
       })
@@ -185,21 +197,22 @@ export default function NewButton() {
           {box ? (
             <label className="form-news">
             Em qual portal o botão deve ser adicionado:
-            <select
-              className="select select-category form-input-news"
-              defaultValue={1} //1== id da categoria geral
-              // onChange={(e) => setCategorySelect(e.target.value)}
+            <select   
+              className="select select-category2 form-input-news" 
+              onChange={(e) => setIdPortal(e.target.value)}
+              defaultValue={0}
             >
-            {/* {category == null
+              <option disabled selected>Selecione um portal para continuar</option>
+              {optionPortal == null
                 ? ""
-                : category.map((item, i) => (
-                    <option value={item.ID} key={i}>
-                      {item.TIPO_NOME}
+                : <>
+                { optionPortal.map((item, i) => (
+                    <option value={item.UUID} key={i}> 
+                      {item.NOME}
                     </option>
-                  ))}  */}
-                  <option value="1" >
-                      Portal de Raposa
-                    </option>
+                  ))} 
+                </>
+                  }
             </select>
           </label>
           ):<></>}

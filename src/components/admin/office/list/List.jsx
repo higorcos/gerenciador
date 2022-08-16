@@ -4,21 +4,58 @@ import { useState, useEffect } from "react";
 import api from "../../../../services/api";
 import Loading from "../../../utils/loading/LoadingFull";
 
+import { PortalContext } from "../../../../contexts/portal";
+import { useContext } from "react";
  
 export default function ListOffice() {
   const [Office, setOffice] = useState([]);
   const [OfficeOthers, setOfficeOthers] = useState([]);
   const [removeLoading, setRemoveLoading] = useState(false) //loading
-    const [resultDelete, setResultDelete] = useState([])
+  const [resultDelete, setResultDelete] = useState([])
+ 
+  const [boxSelectPortal, setBoxSelectPortal] = useState(true)
+  const [idPortal,setIdPortal] = useState(null)
+  const [optionPortal,setOptionPortal] = useState(null)
+  const [namePortal,setNamePortal] = useState(null)
+  const {setPortal} = useContext(PortalContext)
+
+
+  
+  useEffect(() => {
+    setRemoveLoading(false)
+    
+      api.get(`/fakeID/portal/show/available`).then((res) => {
+        
+        setOptionPortal(res.data.res);
+        console.log(optionPortal)
+      }).catch((err)=>{
+        console.log('erro')
+      });
+      setRemoveLoading(true)
+   
+ 
+
+
+  }, []);
+
 
   useEffect(() => {
-    api.get("/office/show").then((res) => {
+    setRemoveLoading(false)
+
+    api.get(`/${idPortal}/office/show`).then((res) => {
       setOffice(res.data.Gabinete);
       setOfficeOthers(res.data.Outros)
       setRemoveLoading(true)
       
     });
-  }, []);
+    if( optionPortal != null)
+    optionPortal.map((item)=>{
+      if(item.UUID == idPortal){
+        setNamePortal(item.NOME)
+        setPortal(item)
+        }})
+  }, [idPortal]);
+  
   useEffect(() => {
       setOffice(Office.filter((Office) => Office.ID !== resultDelete));  
     setOfficeOthers(OfficeOthers.filter((Office) => Office.ID !== resultDelete));  
@@ -29,13 +66,18 @@ export default function ListOffice() {
   const clickLoading = ()=>{
     setRemoveLoading(false)
   }
+  const SubmitSelectPortal = async(e)=>{
+    e.preventDefault();
+    setBoxSelectPortal(false)
+
+  }
 
   const deleteOffice = (idOffice,nameImg) => {
     const alertConf = window.confirm("Quer deletar ?");
     if (alertConf) {
       setRemoveLoading(false)
       api
-        .delete(`/office/delete/${idOffice}`)//${nameImg}
+        .delete(`/${idPortal}/office/delete/${idOffice}`)//${nameImg}
         .then((res) => {
           const result = res.data;
           if (result.err) {
@@ -60,13 +102,16 @@ export default function ListOffice() {
     <div className="container list-ste">
       <div className="Title-list-news-admin">
         <h3>Painel das Competências</h3>
+          {namePortal != null && <h6 >
+            {namePortal}
+          </h6>}
       </div>
      
     <div className="btn-list-add">
     <Button
         className="btn-success"
         variant="primary"
-        href={"/competencia/criar"}
+        href={`/competencia/criar`}
         onClick={() => clickLoading()}
 
       >
@@ -139,6 +184,45 @@ export default function ListOffice() {
       </Table>
       {(Office.length === 0 && OfficeOthers.length ===0) && <p className="resultTxt">Nenhum resultado</p>}
     </div>
+
+
+    {boxSelectPortal && (<>
+    <div className="card_plus_office-new">
+     <div  className="box-office-new">
+        <div className="Title_card_plus">
+          <h3>Selecione o Portal</h3>
+        </div>
+       
+    </div>
+      <form  className="form-admin-office">
+          
+          <label className="form-office-new ">
+          
+            <div className="form-news office-select">
+            <select   
+              className="select select-category2 form-input-news" 
+              onChange={(e) => setIdPortal(e.target.value)}
+              defaultValue={0}
+            >
+              <option disabled selected>Selecione um portal para continuar</option>
+              {optionPortal == null
+                ? ""
+                : <>
+                { optionPortal.map((item, i) => (
+                    <option value={item.UUID} key={i}> 
+                      {item.NOME}
+                    </option>
+                  ))} 
+                </>
+                  }
+            </select>
+            </div>
+          </label>
+          <input type="submit" onClick={(e)=>SubmitSelectPortal(e)} value="Continuar" className="button-submit" />
+        </form>
+    </div>
+      
+      </>)}
       </>
   );
 }

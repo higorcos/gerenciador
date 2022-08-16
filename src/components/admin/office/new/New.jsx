@@ -3,10 +3,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../../services/api";
+import { PortalContext } from "../../../../contexts/portal";
+import { useContext } from "react";
 
 export default function NewOffice() {
   const editorRef = useRef(null);
   const navigate = useNavigate();
+  const {showPortal} = useContext(PortalContext)
 
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -21,39 +24,52 @@ export default function NewOffice() {
 
   const [removeLoading, setRemoveLoading] = useState(true); //loading
   const [boxOffice,setBoxOffice] = useState(false)
+  
 
   const [nomeType, setNomeType] = useState("");
   const [categoryType, setCategoryType] = useState(null);
   const [categorySelectType, setCategorySelectType] = useState(1);
-
   const [categoryNew, setCategoryNew] = useState(null)
- 
 
+ 
+  const [idPortal,setIdPortal] = useState(null)
+  const [namePortal,setNamePortal] = useState(null)
+  var valor = 1
+  //vai carregar os portais possíveis
+  
+  useEffect(() => {
+  
+  }, []);
   //render categorias  //render Tipos
   useEffect(() => {
-    alert('Configurado apenas para o portal de Raposa no momento')
-    const func = async ()=>{
+
+    
       setRemoveLoading(false)
-      await api.get("/office/category/show").then((res) => {
-        setCategory(res.data.res);
-        //console.log(category)
-      });
-       await api.get("/office/type/show").then((res) => {
+     
+       api.get(`/${showPortal.UUID}/office/type/show`).then((res) => {
         setCategoryType(res.data.res);
+        console.log(category,res.data.res,22)
+
+      });
+       api.get(`/${showPortal.UUID}/office/category/show`).then((res) => {
+        setCategory(res.data.res);
+        console.log(idPortal)
+
+        console.log(category,res.data.res,11)
       });
       setRemoveLoading(true)
-    }
-    func()
-
+    
+   
+// eslint-disable-next-line 
   }, []);
 //render categorias depois que uma for adicionada
   useEffect(() => {
-  api.get("/office/category/show").then((res) => {
+  api.get(`/${showPortal.UUID}/office/category/show`).then((res) => {
     setCategory(res.data.res);
     
   });
+  // eslint-disable-next-line 
   }, [boxOffice]);
-
   useEffect(() => {
 
     const img2 = img || " "; // se imag for undefined, a img2 será uma string vazia
@@ -80,6 +96,7 @@ export default function NewOffice() {
   }, [categoryNew]);
 
   //submit formulário
+
   const handleSubmit = async (e) => {
 
     e.preventDefault();
@@ -113,7 +130,7 @@ export default function NewOffice() {
     };
  
     await api
-      .post("/office/new", dataJson, headers)
+      .post(`/${idPortal}/office/new`, dataJson, headers)
       .then((res) => {
         if (res.data.err) {
           alert("Erro, Verifique se foi preenchido corretamente!!!");
@@ -149,7 +166,7 @@ export default function NewOffice() {
         },
       };
       await api
-        .post("/office/category/new", data, headers)
+        .post(`/${showPortal.UUID}/office/category/new`, data, headers)
         .then((res) => {
           if (res.data.err) {
             alert("Ocorreu um erro, tente novamente!!!");
@@ -176,7 +193,10 @@ export default function NewOffice() {
 
       <div className="content-admin-news">
         <form onSubmit={handleSubmit} className="form-admin-news">
-          <h3>Nova Competência </h3>
+          <h3>Nova Competência 
+          {namePortal != null && <h6 >
+            {namePortal}
+          </h6>} </h3> 
 
 
           <label className="form-news form-file">
@@ -239,7 +259,7 @@ export default function NewOffice() {
                 Selecione um cargo
                 </>
                 : <> {categoryNew.nome}
-                </>}
+                </>} 
                 </option>
               {category == null
                 ? ""
@@ -327,9 +347,10 @@ export default function NewOffice() {
          
          
 
-          <input type="submit" value="Enviar" className="button-submit" />
+          <input type="submit" value="Criar" className="button-submit" />
         </form>
       </div>
+
 
 
 
