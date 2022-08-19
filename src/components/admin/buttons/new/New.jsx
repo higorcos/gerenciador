@@ -22,7 +22,8 @@ export default function NewButton() {
 
   const [optionPortal,setOptionPortal] = useState(null)
   const [idPortal,setIdPortal] = useState(null)
-
+  const [filterOption, setFilterOption] = useState([])
+  const [resultFilterOption, setResultFilterOption] = useState([])
 
   //render Tipos de botões E PORTAIS
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function NewButton() {
       setCategory(res.data.res);
       api.get(`/fakeID/portal/show/available`).then((res) => {  
         setOptionPortal(res.data.res);
+        setResultFilterOption(res.data.res)
         
         setRemoveLoading(true);
       }).catch((err)=>{
@@ -43,6 +45,22 @@ export default function NewButton() {
 
     });
   }, []);
+  useEffect(()=>{
+    if(filterOption != null && filterOption != undefined){
+      if(optionPortal != null && optionPortal != undefined){
+
+    setResultFilterOption(optionPortal.filter((item,index)=>{
+      const nameCase = (item.NOME).toLowerCase()
+      if(nameCase.includes(filterOption.toString().toLowerCase())){
+       // console.log(nameCase)
+        return item
+      }
+    }))
+    }} 
+   // console.log(resultFilterOption)   
+  // eslint-disable-next-line                  
+  },[filterOption])
+
 
   useEffect(() => {
     if(categorySelect == 1){
@@ -132,19 +150,8 @@ export default function NewButton() {
         <form onSubmit={handleSubmit} className="form-admin-news">
           <h3>Novo Botão</h3>
 
-          <label className="form-news">
-            Nome:
-            <input
-              type="text"
-              name="title"
-              className="form-input-news"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </label>
-
           <label className="form-news form-file">
-            Icone: Formato svg
+            Ícone: Formato svg
             <input
               type="file"
               name="imgTop"
@@ -177,6 +184,16 @@ export default function NewButton() {
               <p>Buscar</p>
             </div>
           </label>
+          <label className="form-news">
+            Nome:
+            <input
+              type="text"
+              name="title"
+              className="form-input-news"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </label>
 
           <label className="form-news">
             Tipo Botão:
@@ -197,16 +214,27 @@ export default function NewButton() {
           {box ? (
             <label className="form-news">
             Em qual portal o botão deve ser adicionado:
+            <input
+              type="text"
+              name="title"
+              placeholder="Filtrar Opções"
+              className="form-input-news"
+              value={filterOption}
+              onChange={(e) => setFilterOption(e.target.value)}
+            />
             <select   
               className="select select-category2 form-input-news" 
               onChange={(e) => setIdPortal(e.target.value)}
               defaultValue={0}
             >
+              {/* <option disabled selected>Selecione um portal para continuar</option> */}
+              {resultFilterOption == null
+              ? 
               <option disabled selected>Selecione um portal para continuar</option>
-              {optionPortal == null
-                ? ""
                 : <>
-                { optionPortal.map((item, i) => (
+              <option disabled selected>Selecione um portal para continuar</option>
+
+                { resultFilterOption.map((item, i) => (
                     <option value={item.UUID} key={i}> 
                       {item.NOME}
                     </option>
@@ -240,11 +268,6 @@ export default function NewButton() {
           </div>
           </label><br/>
         
-    
-
-
-         
-
           <input type="submit" value="Enviar" className="button-submit" />
         </form>
       </div>

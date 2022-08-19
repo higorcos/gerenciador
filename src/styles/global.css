@@ -49,3 +49,24 @@ section.Infor-top {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     font-weight: 550;
 }
+
+    /*upload*/
+.fundo {
+    background-color: rgba(0, 0, 0, 0.329);
+    top: 0;
+    /* position: absolute; */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    bottom: 0;
+}
+.upload-card-res{
+    height: 25%;
+}
+img.button-close-icons {
+    
+    height: 1rem;
+}

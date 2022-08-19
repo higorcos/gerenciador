@@ -16,26 +16,44 @@ function List() {
   const [boxSelectPortal, setBoxSelectPortal] = useState(false)
   const [idPortal,setIdPortal] = useState(null)
   const [optionPortal,setOptionPortal] = useState(null)
+  const [filterOption, setFilterOption] = useState([])
+  const [resultFilterOption, setResultFilterOption] = useState([])
   const [namePortal,setNamePortal] = useState(null)
-  const {setPortal, showPortal} = useContext(PortalContext)
+  const {setPortal} = useContext(PortalContext)
 
 
 
   useEffect(() => {
-    setRemoveLoading(false)
+    //setRemoveLoading(false)
     const f = async ()=>{
       await api.get(`/fakeID/portal/show/available`).then((res) => {
         
         setOptionPortal(res.data.res);
+        setResultFilterOption(res.data.res)
         console.log(optionPortal)
       }).catch((err)=>{
         console.log('erro')
       });
-      setRemoveLoading(true)
+      //setRemoveLoading(true)
     }
-    const res = f()
+     f()
 
   }, []);
+  useEffect(()=>{
+    if(filterOption != null && filterOption != undefined){
+      if(optionPortal != null && optionPortal != undefined){
+
+    setResultFilterOption(optionPortal.filter((item,index)=>{
+      const nameCase = (item.NOME).toLowerCase()
+      if(nameCase.includes(filterOption.toString().toLowerCase())){
+       // console.log(nameCase)
+        return item
+      }
+    }))
+    }} 
+   // console.log(resultFilterOption)   
+  // eslint-disable-next-line                  
+  },[filterOption])
 
   useEffect(() => {
     setRemoveLoading(false)
@@ -44,15 +62,16 @@ function List() {
         setButtonNULL(res.data.resultNULL);
         setButton(res.data.result); 
       });
-      setRemoveLoading(true)
+      
     }
     func()
-    if( optionPortal != null)
-    optionPortal.map((item)=>{
+    if( resultFilterOption != null)
+    resultFilterOption.map((item)=>{
       if(item.UUID == idPortal){
         setNamePortal(item.NOME)
         setPortal(item)
         }})
+        setRemoveLoading(true)
   }, [idPortal]);
 
   const clickLoading = ()=>{
@@ -99,26 +118,62 @@ function List() {
     <>
      {!removeLoading && <Loading/> }
     <div className="container list-ste">
-      <div className="Title-list-news-admin">
-        <h3>Botões dos Portais</h3>
-      </div>
-     
-    <div className="btn-list-add">
-    <Button
-        className="btn-success"
-        variant="primary"
-        href={"/botoes/criar"}
-        onClick={() => clickLoading()}
 
-      >
-        Criar novo Botão
-      </Button>
       <div className="Title-list-news-admin">
+        <div>
+        <h3>Botões dos Portais</h3>
+      <Button
+          className="btn-success"
+          variant="primary"
+          href={"/botoes/criar"}
+          onClick={() => clickLoading()}
+
+        >
+          Criar novo Botão
+        </Button>
+        </div>
+        <div>
+        <label className="form-news">
+            Selecione botões de um Portal:
+            <select   
+              className="select select-category3 form-input-news" 
+              onChange={(e) => setIdPortal(e.target.value)}
+              defaultValue={idPortal}
+            >
+              <option disabled selected>Selecione um portal para continuar</option>
+              {resultFilterOption == null
+                ? ""
+                : <>
+                { resultFilterOption.map((item, i) => (
+                    <option value={item.UUID} key={i}> 
+                      {item.NOME}
+                    </option>
+                  ))} 
+                </>
+                  }
+            </select>
+            <input
+              type="text"
+              name="filter"
+              placeholder="Filtrar opções"
+              className="select select-category2 form-input-news"
+              value={filterOption}
+              onChange={(e) => setFilterOption(e.target.value)}
+            />
+          </label>
+          </div>
+      </div>
+    <div className="btn-list-add">
+
+
+      <div className="Table-box">
+      <div className="table-botoes table-gerenciador">
+      <div className="Title-list-news-admin2">
         <br/>
         <h6>Botões de Genéricos (Padrão de todos os portais)</h6>
       </div>
-     </div>
-      <Table responsive>
+     
+      <Table responsive="sm">
         <thead>
           <tr>
             <th>Nome</th>
@@ -138,10 +193,10 @@ function List() {
                 <Button
                   className="btn-Danger"
                   variant="warning"
-                  // href={"/admin/noticias/editar/" + button.ID}
-                  onClick={() => alert("Em manutenção")}
+                  href={"/botoes/editar/"+button.ID}
+                  // onClick={() => alert("Em manutenção")}
 
-                  // onClick={() => clickLoading()}
+                  onClick={() => clickLoading()}
 
                 >
                   Editar
@@ -161,39 +216,21 @@ function List() {
       {buttonNULL != undefined && <>
       {buttonNULL.length === 0 && <p className="resultTxt">Nenhum resultado</p>}
     </>}
+    </div>
+    
 
-
+    <div className="table-botoes table-gerenciador">
     <div className="btn-list-add">
-    <label className="form-news">
-            Selecione botões de um Portal:
-            <select   
-              className="select select-category2 form-input-news" 
-              onChange={(e) => setIdPortal(e.target.value)}
-              defaultValue={idPortal}
-            >
-              <option disabled selected>Selecione um portal para continuar</option>
-              {optionPortal == null
-                ? ""
-                : <>
-                { optionPortal.map((item, i) => (
-                    <option value={item.UUID} key={i}> 
-                      {item.NOME}
-                    </option>
-                  ))} 
-                </>
-                  }
-            </select>
-          </label>
-      <div className="Title-list-news-admin">
-        <br/>
-        <h6>Botões Unitários (Especifico de um portal)</h6>
-        {namePortal != null && <h4 >
-            {namePortal}
-          </h4>}
+            <div className="Title-list-news-admin2">
+              <br/>
+              <h6>Botões Unitários (Especifico de um portal)</h6>
+              {namePortal != null && <h4 >
+                  {namePortal}
+                </h4>}
 
       </div>
      </div>
-      <Table responsive>
+      <Table responsive="sm">
         <thead>
           <tr>
             <th>Nome</th>
@@ -215,10 +252,10 @@ function List() {
                <Button
                  className="btn-Danger"
                  variant="warning"
-                //  href={"/admin/noticias/editar/" + button.ID}
-                 onClick={() => alert("Em manutenção")}
+                 href={"/botoes/editar/"+button.ID}
+                 //onClick={() => alert("Em manutenção")}
 
-                //  onClick={() => clickLoading()}
+                 onClick={() => clickLoading()}
 
                >
                  Editar
@@ -240,7 +277,7 @@ function List() {
       {button.length === 0 && <p className="resultTxt">Nenhum resultado</p>}
       </>}
       </div>
-      
+      </div>
 
 
 
@@ -263,10 +300,10 @@ function List() {
               defaultValue={0}
             >
               <option disabled selected>Selecione um portal para continuar</option>
-              {optionPortal == null
+              {resultFilterOption == null
                 ? ""
                 : <>
-                { optionPortal.map((item, i) => (
+                { resultFilterOption.map((item, i) => (
                     <option value={item.UUID} key={i}> 
                       {item.NOME}
                     </option>
@@ -281,9 +318,9 @@ function List() {
     </div>
       
       </>)}
-    
+    </div>
+    </div>
       </>
-  );
-}
+  )}
 
 export default List;

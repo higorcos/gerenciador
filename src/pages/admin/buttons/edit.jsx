@@ -1,17 +1,19 @@
 
 import Navbar from "../../../components/public/Navbar"
 import ShowInfor from "../../../components/public/ShowInfor"
-import ListButton from "../../../components/admin/buttons/list/Lists"
+import EditButton from "../../../components/admin/buttons/edit/Edit"
+import { useParams } from "react-router-dom"
 
-export default function newButton(){
+
+export default function EditButtonPage(){
+    const {idButton} = useParams()
     return(<>
     <Navbar/>
-    <ShowInfor/>
-    <div className="box-horizontal">
-    <section className="title-card-margin">
+    <div className="box-horizontl">
+    <section className="title-card-marsin">
        
 
-    <ListButton/>
+    <EditButton id={idButton}/>
     </section>
    
     </div>
@@ -19,4 +21,4 @@ export default function newButton(){
     </>)
 }
 
-
+// rgb(237 237 237)

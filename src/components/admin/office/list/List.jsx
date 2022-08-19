@@ -12,6 +12,9 @@ export default function ListOffice() {
   const [OfficeOthers, setOfficeOthers] = useState([]);
   const [removeLoading, setRemoveLoading] = useState(false) //loading
   const [resultDelete, setResultDelete] = useState([])
+  const [filterOption, setFilterOption] = useState([])
+  const [resultFilterOption, setResultFilterOption] = useState([])
+  
  
   const [boxSelectPortal, setBoxSelectPortal] = useState(true)
   const [idPortal,setIdPortal] = useState(null)
@@ -24,20 +27,16 @@ export default function ListOffice() {
   useEffect(() => {
     setRemoveLoading(false)
     
-      api.get(`/fakeID/portal/show/available`).then((res) => {
-        
+      api.get(`/fakeID/portal/show/available`).then((res) => {       
         setOptionPortal(res.data.res);
-        console.log(optionPortal)
+        setResultFilterOption(res.data.res);
+        
       }).catch((err)=>{
         console.log('erro')
       });
       setRemoveLoading(true)
-   
- 
-
 
   }, []);
-
 
   useEffect(() => {
     setRemoveLoading(false)
@@ -48,8 +47,8 @@ export default function ListOffice() {
       setRemoveLoading(true)
       
     });
-    if( optionPortal != null)
-    optionPortal.map((item)=>{
+    if( resultFilterOption != null)
+    resultFilterOption.map((item)=>{
       if(item.UUID == idPortal){
         setNamePortal(item.NOME)
         setPortal(item)
@@ -62,6 +61,21 @@ export default function ListOffice() {
     setRemoveLoading(true)
     // eslint-disable-next-line
   }, [resultDelete]);
+  useEffect(()=>{
+    if(filterOption != null && filterOption != undefined){
+      if(optionPortal != null && optionPortal != undefined){
+
+    setResultFilterOption(optionPortal.filter((item,index)=>{
+      const nameCase = (item.NOME).toLowerCase()
+      if(nameCase.includes(filterOption.toString().toLowerCase())){
+       // console.log(nameCase)
+        return item
+      }
+    }))
+    }} 
+   // console.log(resultFilterOption)   
+  // eslint-disable-next-line                  
+  },[filterOption])
 
   const clickLoading = ()=>{
     setRemoveLoading(false)
@@ -195,8 +209,16 @@ export default function ListOffice() {
        
     </div>
       <form  className="form-admin-office">
-          
+   
           <label className="form-office-new ">
+            <input
+              type="text"
+              name="title"
+              placeholder="Filtrar Opções"
+              className="form-input-news"
+              value={filterOption}
+              onChange={(e) => setFilterOption(e.target.value)}
+            />
           
             <div className="form-news office-select">
             <select   
@@ -205,10 +227,10 @@ export default function ListOffice() {
               defaultValue={0}
             >
               <option disabled selected>Selecione um portal para continuar</option>
-              {optionPortal == null
+              {resultFilterOption == null
                 ? ""
                 : <>
-                { optionPortal.map((item, i) => (
+                { resultFilterOption.map((item, i) => (
                     <option value={item.UUID} key={i}> 
                       {item.NOME}
                     </option>

@@ -7,8 +7,8 @@ export default function newButton(){
     return(<>
     <Navbar/>
     <ShowInfor/>
-    <div className="box-horizontal">
-    <section className="title-card-margin">
+    <div className="box-horizontal2">
+    <section className="title-card-margin2">
        
 
     <ListButton/>

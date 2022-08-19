@@ -1,7 +1,7 @@
-import ButtonHome from "../../components/public/ButtonHome"
+
 import Navbar from "../../components/public/Navbar"
 import ShowInfor from "../../components/public/ShowInfor"
-import Uploas from "../../components/upload"
+import Uploads from "../../components/utils/Upload"
 
 export default function Home(){
     return(<>
@@ -10,7 +10,7 @@ export default function Home(){
     <div className="box-horizontal">
     <section className="title-card-margin">
         <h6>Funções</h6>
-    <Uploas/>
+    <Uploads/>
     </section>
     </div>
 

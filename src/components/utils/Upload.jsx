@@ -1,16 +1,19 @@
 
-import Loading from "./utils/loading/LoadingFull";
+import Loading from "./loading/LoadingFull";
 
 import React, { useState} from "react";
-import api from "../services/api";
-import { imagemURL } from "../services/variables";
+import api from "../../services/api";
+import { imagemURL } from "../../services/variables";
 
 export default function NewButton() {
   
 
   const [removeLoading, setRemoveLoading] = useState(true)
+  const [boxResult, setBoxResult] = useState(false)
+  const [res, setRes] = useState([])
 
   const [img, setImg] = useState("");
+
  
 
 
@@ -35,9 +38,11 @@ export default function NewButton() {
           alert("Ocorreu um erro, tente novamente!!!");
           setRemoveLoading(true);
         } else {
-          alert(`Acesse o seu arquivo no link: ${imagemURL +res.data.res }`);
           setRemoveLoading(true);
-        
+          const result = imagemURL +res.data.res
+          setRes(result)
+          console.log('sucesso')
+          setBoxResult(true)
         }
       })
       .catch((err) => {
@@ -86,16 +91,28 @@ export default function NewButton() {
               <p>Buscar</p>
             </div>
           </label>
-
-        
-    
-
-
-         
-
           <input type="submit" value="Fazer Upload" className="button-submit" />
         </form>
       </div>
+
+      {boxResult && (<>
+      <div className="fundo">
+    <div className="card_plus_office-new upload-card-res">
+     <div  className="box-office-new">
+        <div className="Title_card_plus card-text-resutl">
+          <h3>Link do arquivo</h3>
+          <a href={res != undefined ? res : '#'} 
+          target="_blank" rel="noopener noreferrer"
+          >Abrir arquivo</a>
+          
+        </div>
+       
+    <img  onClick={(e)=>( setBoxResult(false))} src='icons/close.svg' className="button-close-icons" />
+        </div>
+     
+    </div>
+    </div>
+      </>)}
     </>
   );
 }
